@@ -1,0 +1,4 @@
+paths:
+  /v3:
+    get:
+      summary: Show API 3 version details

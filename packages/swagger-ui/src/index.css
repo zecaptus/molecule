@@ -1,0 +1,157 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+[data-reactroot] {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/**
+ * Molecule body
+ */
+.molecule-body {
+  display: flex;
+  flex: 1;
+}
+
+.molecule-body > :first-child:not(:last-child) {
+  padding-right: 8px;
+}
+
+.molecule-body > span {
+  flex: 3;
+  background: #1e1e1e;
+}
+
+.molecule-body > span .opblock {
+  background: none !important;
+  border: none;
+  border-radius: 0;
+  color: #ccc;
+}
+
+/**
+ * LeftSidebar
+ */
+.LeftSidebar {
+  background: #333;
+  flex: 1;
+}
+
+.LeftSidebar > section > .Tag {
+  background: #383838;
+  color: #ccc;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+.LeftSidebar > section > .Tag.active {
+  border-bottom: 2px solid #141414;
+}
+.LeftSidebar > section > .Tag :nth-child(1) {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.LeftSidebar > section > .Tag :nth-child(2) {
+  font-style: italic;
+  font-size: 12px;
+}
+
+.LeftSidebar > section .Paths {
+  background: #252525;
+  color: #ccc;
+}
+
+.Paths .Path.opblock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: none;
+  margin: 0;
+  padding: 8px;
+  cursor: pointer;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+.Paths .Path.opblock-deprecated :nth-child(1) {
+  text-decoration: line-through;
+}
+.Paths .Path :nth-child(2) {
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-left: 16px;
+  min-width: 60px;
+  padding: 3px 0px;
+  opacity: 0.5;
+}
+.Paths .Path.opblock:hover {
+  color: #fff;
+  background: inherit;
+}
+.Paths .Path:hover :nth-child(2) {
+  opacity: 1;
+}
+
+.Topbar {
+  height: 70px;
+  background: #333;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+}
+
+/* overwrite */
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th,
+.swagger-ui .parameter__name,
+.swagger-ui .opblock .opblock-summary-operation-id,
+.swagger-ui .opblock .opblock-summary-path,
+.swagger-ui .opblock .opblock-summary-path__deprecated,
+.swagger-ui .opblock .opblock-summary-description,
+.swagger-ui .response-col_status,
+.swagger-ui .tab li,
+.swagger-ui label,
+.swagger-ui .opblock .opblock-section-header h4,
+.swagger-ui .btn,
+.swagger-ui .opblock .opblock-section-header > label,
+.swagger-ui .opblock-description-wrapper,
+.swagger-ui .opblock-external-docs-wrapper,
+.swagger-ui .opblock-title_normal,
+.swagger-ui .parameter__type,
+.swagger-ui .responses-inner h4,
+.swagger-ui .responses-inner h5,
+.swagger-ui .opblock-description-wrapper p,
+.swagger-ui .opblock-external-docs-wrapper p,
+.swagger-ui .opblock-title_normal p {
+  color: #ccc;
+}
+
+.swagger-ui .opblock .opblock-section-header {
+  background: #383838;
+}
+
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th {
+  border-bottom: 1px solid rgba(204, 204, 204, 0.2);
+}

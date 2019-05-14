@@ -1,0 +1,111 @@
+openapi: 3.0.0
+info:
+  version: V0
+  title: Example
+  description: Showing how examples does not show up
+
+servers:
+  - url: localhost
+    description: Production Server
+
+paths:
+  /examples:
+    post:
+      operationId: bla2
+      summary: Multiple examples do not appear in ui
+      description: 'Request info from the server '
+      requestBody:
+        description: The payload of search terms
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              description: All the parameters you can send to the search engine
+              properties:
+                search:
+                  type: string
+                  description: The phrase being searched for
+                location:
+                  type: string
+                  description: any string which describes the desired location of the job; will be parsed by the server
+            examples:
+              typical_user:
+                summary: 'Basic Query'
+                value:
+                  search: 'pizza'
+                  location: 'Chicago'
+              second:
+                summary: 'More Involved Query'
+                value:
+                  search: 'summer camp'
+                  location: 'Dallas, TX'
+              other:
+                summary: 'other shtuff'
+                value:
+                  search: 'janitor'
+                  location: 'Omaha, NE'
+      responses:
+        '200': # status code
+          description: 'A JSON array of suggested jobs and related info on the query'
+          content:
+            'application/json':
+              schema:
+                type: object
+                description: All the parameters returned from the search engine
+                properties:
+                  result_string:
+                    type: string
+                    description: The search result
+              examples:
+                typical_user:
+                  summary: 'first result'
+                  value:
+                    result_string: 'deep dish'
+                second:
+                  summary: 'second result'
+                  value:
+                    result_string: 'camp wisdom'
+                other:
+                  summary: 'third result'
+                  value:
+                    result_string: 'ProCleaners Inc.'
+  /example:
+    post:
+      x-controller: 'test'
+      operationId: bla
+      summary: One example does show
+      description: Request info from the server
+      requestBody:
+        description: The payload of search terms
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              description: All the parameters you can send to the search engine
+              properties:
+                search:
+                  type: string
+                  description: The phrase being searched for
+                location:
+                  type: string
+                  description: any string which describes the desired location of the job; will be parsed by the server
+              example:
+                search: 'things to do'
+                location: 'Omaha, NE'
+
+      responses:
+        '200': # status code
+          description: 'A JSON array of suggested jobs and related info on the query'
+          content:
+            'application/json':
+              schema:
+                type: object
+                description: All the parameters returned from the search engine
+                properties:
+                  result_string:
+                    type: string
+                    description: The phrase being searched for
+                example:
+                  result_string: 'lots of things!'

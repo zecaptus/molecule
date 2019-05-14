@@ -1,0 +1,5 @@
+paths:
+  /v3:
+    get:
+      operationId: getVersionDetailsv3
+      summary: Show API 3 version details
