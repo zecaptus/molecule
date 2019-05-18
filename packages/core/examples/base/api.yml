@@ -8,10 +8,17 @@ servers:
   - url: localhost
     description: Production Server
 
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
 paths:
   /examples:
     post:
-      operationId: bla2
+      security:
+        - BearerAuth: [admin]
       summary: Multiple examples do not appear in ui
       description: 'Request info from the server '
       requestBody:
@@ -73,7 +80,6 @@ paths:
   /example:
     post:
       x-controller: 'test'
-      operationId: bla
       summary: One example does show
       description: Request info from the server
       requestBody:

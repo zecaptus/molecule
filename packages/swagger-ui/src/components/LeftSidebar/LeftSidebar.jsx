@@ -1,12 +1,39 @@
 import React from 'react';
+import { helpers } from 'swagger-client';
+
+const { opId } = helpers;
 
 function LeftSidebar(props) {
   const Collapse = props.getComponent('Collapse');
 
   const { docExpansion } = props.getConfigs();
+  let currentOp = props.molecule().get('operation');
+  let currentOperationId = null;
+
+  if (currentOp) {
+    currentOp = currentOp.op;
+    currentOperationId =
+      currentOp.getIn(['operation', '__originalOperationId']) ||
+      currentOp.getIn(['operation', 'operationId']) ||
+      opId(
+        currentOp.get('operation'),
+        currentOp.get('path'),
+        currentOp.get('method'),
+      ) ||
+      currentOp.get('id');
+  }
+
+  const info = props.specSelectors.info();
+
+  const title = info.get('title');
+  const version = info.get('version');
 
   return (
     <aside className="LeftSidebar">
+      <div className="sb-info">
+        <span className="topbar-title">{title}</span>
+        <span className="topbar-version">{version}</span>
+      </div>
       {props.tags
         .map((tagObj, tag) => {
           const isShownKey = ['operations-tag', tag];
@@ -28,16 +55,23 @@ function LeftSidebar(props) {
                   {tagObj
                     .get('operations')
                     .map(op => {
-                      const { deprecated, operationId } = op
-                        .get('operation')
-                        .toJS();
+                      const { deprecated } = op.get('operation').toJS();
                       const path = op.get('path');
                       const method = op.get('method');
+                      const operationId =
+                        op.getIn(['operation', '__originalOperationId']) ||
+                        op.getIn(['operation', 'operationId']) ||
+                        opId(op.get('operation'), path, method) ||
+                        op.get('id');
                       return (
                         <div
                           className={`opblock${
                             deprecated ? ' opblock-deprecated' : ''
-                          } opblock-${method} Path`}
+                          } opblock-${method} Path${
+                            currentOperationId === operationId
+                              ? ' active'
+                              : ' inactive'
+                          }`}
                           key={`${path}-${method}`}
                           onClick={() => {
                             props.layoutActions.show(

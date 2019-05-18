@@ -1,11 +1,21 @@
 import React from 'react';
 import logo from '../logo.svg';
+import Swagger from '../assets/Swagger';
 
-function Topbar() {
+function Topbar(props) {
+  const { specSelectors } = props;
+
+  const info = specSelectors.info();
+
+  const title = info.get('title');
+  const version = info.get('version');
   return (
     <div className="Topbar">
-      <img src={logo} alt="logo" height={48} />
-      Molecule - Swagger UI
+      <Swagger style={{ padding: 8 }} />
+      <div>
+        <span className="topbar-title">{title}</span>
+        <span className="topbar-version">{version}</span>
+      </div>
     </div>
   );
 }

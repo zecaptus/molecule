@@ -14,7 +14,6 @@ function koaSwagger(routePrefix, options = {}) {
   );
   return function koaSwaggerUi(ctx, next) {
     if (routePrefix === false || ctx.path === routePrefix) {
-      console.log(options);
       ctx.type = 'text/html';
       ctx.body = index({ swaggerOptions: options });
       return true;

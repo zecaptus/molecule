@@ -2,15 +2,14 @@ import React from 'react';
 import LeftSidebar from '../../components/LeftSidebar';
 
 const operations = (Original, system) => props => {
-  console.log(system.getStore().getState());
   const tags = props.specSelectors.taggedOperations();
 
+  const isRoutesShown = props.moleculeSelectors.isRoutesShown();
   const operation = props.molecule().get('operation');
   const OperationContainer = props.getComponent('OperationContainer', true);
   return (
     <div className="molecule-body">
-      <LeftSidebar tags={tags} {...props} />
-      {/* {operation && <OperationContainer {...operation} />} */}
+      {isRoutesShown && <LeftSidebar tags={tags} {...props} />}
       {operation &&
         tags
           .map((tagObj, tag) => {

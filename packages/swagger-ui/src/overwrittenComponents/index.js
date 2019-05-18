@@ -6,14 +6,25 @@ export default function(system) {
     wrapComponents: {
       operations,
       OperationSummary: (Original, system) => props => {
-        console.log('summary');
         return <Original {...props} toggleShown={() => {}} />;
       },
-      operationContainer: (Original, system) => props => {
-        console.log(props);
+      authorizeBtn: () => props => {
+        let { isAuthorized, showPopup, onClick, getComponent } = props;
+
+        //must be moved out of button component
+        const AuthorizationPopup = getComponent('authorizationPopup', true);
+
         return (
-          <div>
-            <Original {...props} />
+          <div className={`auth-wrapper${isAuthorized ? ' active' : ''}`}>
+            <div onClick={onClick}>
+              <svg width="26" height="26">
+                <use
+                  href={isAuthorized ? '#locked' : '#unlocked'}
+                  xlinkHref={isAuthorized ? '#locked' : '#unlocked'}
+                />
+              </svg>
+            </div>
+            {showPopup && <AuthorizationPopup />}
           </div>
         );
       },

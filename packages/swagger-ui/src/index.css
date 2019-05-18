@@ -4,10 +4,65 @@ body,
   height: 100%;
 }
 
-[data-reactroot] {
+[data-reactroot].layout {
   height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-flow: row wrap;
+  background: #333;
+}
+
+[data-reactroot].layout > .params {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  color: #ccc;
+}
+[data-reactroot].layout > .params .actions_list > div,
+[data-reactroot].layout > .params .Params > div {
+  padding: 8px;
+  cursor: pointer;
+}
+[data-reactroot].layout > .params .actions_list > div:hover,
+[data-reactroot].layout > .params .actions_list > div.active,
+[data-reactroot].layout > .params .Params > div:hover,
+[data-reactroot].layout > .params .Params > div.active {
+  color: #61affe;
+}
+
+[data-reactroot].layout > .Topbar {
+  height: 70px;
+  background: #333;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  z-index: 99;
+}
+
+.topbar-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.topbar-version {
+  font-size: 12px;
+  color: #61affe;
+  padding-left: 8px;
+  font-style: italic;
+}
+
+.sb-info {
+  color: #ccc;
+  padding: 16px;
+}
+.topbar-version:before {
+  content: 'v';
+}
+
+svg:not(.unfill) path {
+  fill: currentColor;
 }
 
 body {
@@ -30,15 +85,19 @@ code {
 .molecule-body {
   display: flex;
   flex: 1;
+  /* height: calc(100% - 70px); */
+  height: 100%;
 }
 
 .molecule-body > :first-child:not(:last-child) {
-  padding-right: 8px;
+  padding-right: 4px;
+  overflow-y: auto;
 }
 
 .molecule-body > span {
   flex: 3;
   background: #1e1e1e;
+  overflow-y: auto;
 }
 
 .molecule-body > span .opblock {
@@ -46,14 +105,31 @@ code {
   border: none;
   border-radius: 0;
   color: #ccc;
+  position: relative;
+}
+
+/**
+ * settings
+ */
+.modal-ux-content.settings > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #252525;
+  font-size: 15px;
+}
+.modal-ux-content.settings > div .servers-title {
+  font-size: 15px;
 }
 
 /**
  * LeftSidebar
  */
 .LeftSidebar {
-  background: #333;
-  flex: 1;
+  background: #252525;
+  min-width: 300px;
+  padding-bottom: 16px;
+  overflow-y: auto;
 }
 
 .LeftSidebar > section > .Tag {
@@ -86,11 +162,10 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: none;
+  border-width: 0;
   margin: 0;
   padding: 8px;
   cursor: pointer;
-  background: none;
   box-shadow: none;
   border-radius: 0;
 }
@@ -105,20 +180,20 @@ code {
   padding: 3px 0px;
   opacity: 0.5;
 }
-.Paths .Path.opblock:hover {
+
+.Paths .Path.opblock.inactive {
+  background: none;
+}
+.Paths .Path.opblock:hover,
+.Paths .Path.opblock.active {
   color: #fff;
-  background: inherit;
+  border-left-width: 2px;
 }
 .Paths .Path:hover :nth-child(2) {
   opacity: 1;
 }
-
-.Topbar {
-  height: 70px;
-  background: #333;
-  color: #ccc;
-  display: flex;
-  align-items: center;
+.Paths .Path.active :nth-child(2) {
+  opacity: 0;
 }
 
 /* overwrite */
@@ -143,7 +218,9 @@ code {
 .swagger-ui .responses-inner h5,
 .swagger-ui .opblock-description-wrapper p,
 .swagger-ui .opblock-external-docs-wrapper p,
-.swagger-ui .opblock-title_normal p {
+.swagger-ui .opblock-title_normal p,
+.swagger-ui .response-col_links,
+.swagger-ui .authorization__btn {
   color: #ccc;
 }
 
@@ -154,4 +231,15 @@ code {
 .swagger-ui table thead tr td,
 .swagger-ui table thead tr th {
   border-bottom: 1px solid rgba(204, 204, 204, 0.2);
+}
+
+.swagger-ui .opblock-summary {
+  position: absolute;
+  background-color: #1e1e1eb5;
+  width: 100%;
+  z-index: 99;
+}
+
+.swagger-ui .opblock-body {
+  padding-top: 40px;
 }
