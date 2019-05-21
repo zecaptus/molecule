@@ -7,6 +7,7 @@ const components = require('./components');
 const { yml2json } = require('./utils');
 const OAS = require('./OAS');
 const { createMiddleware } = require('./middlewares');
+const tracker = require('./middlewares/requestTracker');
 
 class MoleculeApp {
   constructor(modulePath, oas) {
@@ -26,7 +27,6 @@ class MoleculeApp {
     const comps = await components.getComponents(this.modulePath);
 
     comps.forEach(comp => {
-      console.log(comp);
       const operations = this.oas.addComponent(comp);
 
       /**
@@ -34,9 +34,6 @@ class MoleculeApp {
        */
       operations.forEach(
         ({ method, path, operationId, 'x-middlewares': middlewares }) => {
-          console.log(`init : ${method.toUpperCase()} ${path}`);
-          console.log(`\tmiddlewares: ${middlewares}`);
-          console.log(`\thandler: ${operationId}`);
           const handlers = [...(middlewares || []), operationId].map(handler =>
             createMiddleware(handler, comp.module),
           );
@@ -49,6 +46,7 @@ class MoleculeApp {
   start() {
     const server = new Koa();
 
+    server.use(tracker);
     server.use(
       swaggerUi('/docs', {
         spec: this.oas.spec,

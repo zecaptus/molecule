@@ -1,45 +1,38 @@
-function timelineLogger(handler, start1, start2, end1, end2) {
-  console.log('');
-  console.log('_________________________');
-  console.log('[DEBUG] timeline', handler);
-  console.log('_________________________');
-  if (end1) {
-    console.log('[DEBUG] part1: ', end1 - start1, 'ms');
-    console.log('[DEBUG] next: ', start2 - end1, 'ms');
-    console.log('[DEBUG] part2: ', end2 - start2, 'ms');
-    console.log('[DEBUG] total parts: ', end2 - start1 - (start2 - end1), 'ms');
-  }
-  console.log('[DEBUG] total: ', end2 - start1, 'ms');
-  console.log('_________________________');
-  console.log('');
-}
-
 function createMiddleware(handler, moduleHandlers) {
-  let start1;
-  let start2;
-  let end1;
-  let end2;
+  let nextStarted = false;
+  let nextEnded = false;
+
   let _next;
+  let _ctx;
 
   const namedFunctions = {
     async [`${handler}_next`]() {
-      end1 = Date.now();
+      nextStarted = true;
+      _ctx.app.emit('mw:end', { handler, status: 'idle' });
       await _next();
-      start2 = Date.now();
+      nextEnded = true;
+      _ctx.app.emit('mw:start', { handler, status: 'resume' });
     },
     async [handler](ctx, next) {
-      start1 = Date.now();
+      _ctx = ctx;
       _next = next;
 
-      await moduleHandlers[handler](ctx, namedFunctions[`${handler}_next`]);
-      const end2 = Date.now();
+      // emit start
+      ctx.app.emit('mw:start', { handler, status: 'create' });
 
-      if (end1 && !start2)
-        throw new Error(
-          `"${handler}" is resolved before "next()"\nTry "await next();" or "return next();"`,
-        );
-
-      timelineLogger(handler, start1, start2, end1, end2);
+      try {
+        await moduleHandlers[handler](ctx, namedFunctions[`${handler}_next`]);
+        if (nextStarted && !nextEnded) {
+          throw new Error(
+            `"${handler}" is resolved before "next()"\nTry "await next();" or "return next();"`,
+          );
+        }
+      } catch (e) {
+        ctx.app.emit('mw:end', { handler, status: 'error' });
+        throw e;
+      }
+      // emit end
+      ctx.app.emit('mw:end', { handler, status: 'done' });
     },
   };
 
