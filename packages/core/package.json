@@ -19,6 +19,8 @@
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "lodash": "^4.17.11",
+    "open": "^6.3.0",
+    "react-dev-utils": "^9.0.1",
     "swagger-parser": "^6.0.5",
     "uuid": "^3.3.2"
   }

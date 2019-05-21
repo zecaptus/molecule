@@ -1,16 +1,18 @@
-const swaggerParser = require("swagger-parser");
-const { dirname, join } = require("path");
-const Koa = require("koa");
-const Router = require("koa-router");
-const swaggerUi = require("@molecule/swagger-ui");
-const components = require("./components");
-const { getProcessForPort, choosePort } = require("./utils/port");
-const OAS = require("./OAS");
-const { createMiddleware } = require("./middlewares");
-const tracker = require("./middlewares/requestTracker");
-const gradient = require("gradient-string");
-const { version } = require("../package.json");
-require("./utils/console");
+const swaggerParser = require('swagger-parser');
+const { dirname, join } = require('path');
+const Koa = require('koa');
+const Router = require('koa-router');
+const swaggerUi = require('@molecule/swagger-ui');
+const components = require('./components');
+const { choosePort } = require('./utils/port');
+const OAS = require('./OAS');
+const { createMiddleware } = require('./middlewares');
+const tracker = require('./middlewares/requestTracker');
+const gradient = require('gradient-string');
+const { version } = require('../package.json');
+const chalk = require('chalk');
+const open = require('react-dev-utils/openBrowser');
+require('./utils/console');
 
 class MoleculeApp {
   constructor(modulePath, oas) {
@@ -27,36 +29,38 @@ class MoleculeApp {
 
   sign() {
     console.clear();
-    console.log("");
+    console.log('');
     console.log(
-      gradient("#61affe", "white").multiline(
+      gradient('#61affe', 'white').multiline(
         [
-          "              __             __   ",
-          "  __ _  ___  / /__ ______ __/ /__ ",
+          '              __             __   ',
+          '  __ _  ___  / /__ ______ __/ /__ ',
           " /  ' \\/ _ \\/ / -_) __/ // / / -_)",
-          "/_/_/_/\\___/_/\\__/\\__/\\_,_/_/\\__/ ",
-          `_________________________________v${version}`
-        ].join("\n")
-      )
+          '/_/_/_/\\___/_/\\__/\\__/\\_,_/_/\\__/ ',
+          `_________________________________v${version}`,
+        ].join('\n'),
+      ),
     );
-    console.log("");
+    console.log('');
     this.info = console.draft();
     console.log(
-      gradient("#61affe", "white")("________________________________________")
+      gradient('#61affe', 'white')('________________________________________'),
     );
-    console.log("");
+    console.log('');
   }
 
   async init() {
-    this.info("checking port:", this.port);
-    try {
-      this.port = await choosePort(this.port);
-      this.sign();
-    } catch (e) {
-      console.log(e);
+    this.info('checking port:', this.port);
+
+    this.port = await choosePort(this.port);
+    this.sign();
+
+    if (!this.port) {
+      this.info(chalk.red("Can't start molecule"));
+      process.exit(1);
     }
 
-    this.info("init components");
+    this.info('init components');
     await this.initComponents();
 
     this.start();
@@ -67,9 +71,9 @@ class MoleculeApp {
 
     server.use(tracker);
     server.use(
-      swaggerUi("/docs", {
-        spec: this.oas.spec
-      })
+      swaggerUi('/docs', {
+        spec: this.oas.spec,
+      }),
     );
 
     server.use(this.router.routes());
@@ -77,8 +81,8 @@ class MoleculeApp {
     this.started = true;
     server.listen(this.port);
 
-    //console.log(getProcessForPort(this.port));
-    this.info(`listening on port ${this.port}`);
+    this.info('Your api is live on :', `http://localhost:${this.port}`);
+    open('http://localhost:3000/docs');
   }
 
   async initComponents() {
@@ -91,12 +95,12 @@ class MoleculeApp {
        * init routing
        */
       operations.forEach(
-        ({ method, path, operationId, "x-middlewares": middlewares }) => {
+        ({ method, path, operationId, 'x-middlewares': middlewares }) => {
           const handlers = [...(middlewares || []), operationId].map(handler =>
-            createMiddleware(handler, comp.module)
+            createMiddleware(handler, comp.module),
           );
           this.router[method](path, ...handlers);
-        }
+        },
       );
     });
   }
@@ -108,5 +112,5 @@ function createApp(options) {
 }
 
 module.exports = {
-  createApp
+  createApp,
 };
