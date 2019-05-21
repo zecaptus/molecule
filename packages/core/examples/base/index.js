@@ -1,11 +1,3 @@
-const molecule = require('../../src');
+const { createApp } = require("../../src");
 
-(async () => {
-  const app = await molecule.createApp({
-    api: './api.yml',
-  });
-
-  // await app.addDoc('./doc.yml');
-
-  app.start();
-})();
+createApp();

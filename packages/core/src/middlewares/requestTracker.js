@@ -1,13 +1,12 @@
-require('draftlog').into(console);
-const { green, gray, yellow, red, italic } = require('chalk');
+const { green, gray, yellow, red, italic } = require("chalk");
 
 const spinner = {
   interval: 80,
-  frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
+  frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 };
 
 class Tracker {
-  constructor(text, prefix = '') {
+  constructor(text, prefix = "") {
     this.text = text;
     this.originalText = text;
     this.prefix = prefix;
@@ -45,16 +44,16 @@ class Tracker {
 
   idle() {
     this.idleAt = Date.now();
-    this.text = gray(this.text + ' - idle');
+    this.text = gray(this.text + " - idle");
   }
 
   failed() {
-    this.log(this.prefix, red('✖'), this.text, this.durationTime);
+    this.log(this.prefix, red("✖"), this.text, this.durationTime);
     clearInterval(this.timer);
   }
 
   success() {
-    this.log(this.prefix, green('✔'), this.text, this.durationTime);
+    this.log(this.prefix, green("✔"), this.text, this.durationTime);
     clearInterval(this.timer);
   }
 }
@@ -64,14 +63,14 @@ class RequestTracker extends Tracker {
     super(`${ctx.method} ${ctx.url}`);
 
     this.ctx = ctx;
-    ctx.app.on('mw:start', this.onStart);
-    ctx.app.on('mw:end', this.onEnd);
+    ctx.app.on("mw:start", this.onStart);
+    ctx.app.on("mw:end", this.onEnd);
     this.middlewares = {};
   }
 
   onStart = ({ handler, status }) => {
-    if (!this.middlewares[handler] && status === 'create') {
-      this.middlewares[handler] = new Tracker(handler, '  ');
+    if (!this.middlewares[handler] && status === "create") {
+      this.middlewares[handler] = new Tracker(handler, "  ");
     } else {
       this.middlewares[handler].resume();
     }
@@ -79,13 +78,13 @@ class RequestTracker extends Tracker {
 
   onEnd = ({ handler, status }) => {
     switch (status) {
-      case 'error':
+      case "error":
         this.middlewares[handler].failed();
         break;
-      case 'done':
+      case "done":
         this.middlewares[handler].success();
         break;
-      case 'idle':
+      case "idle":
         this.middlewares[handler].idle();
         break;
     }
@@ -93,14 +92,14 @@ class RequestTracker extends Tracker {
 
   failed() {
     super.failed();
-    this.ctx.app.off('mw:start', this.onStart);
-    this.ctx.app.off('mw:end', this.onEnd);
+    this.ctx.app.off("mw:start", this.onStart);
+    this.ctx.app.off("mw:end", this.onEnd);
   }
 
   success() {
     super.success();
-    this.ctx.app.off('mw:start', this.onStart);
-    this.ctx.app.off('mw:end', this.onEnd);
+    this.ctx.app.off("mw:start", this.onStart);
+    this.ctx.app.off("mw:end", this.onEnd);
   }
 }
 
