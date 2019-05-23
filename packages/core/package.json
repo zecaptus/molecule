@@ -20,6 +20,7 @@
     "koa-router": "^7.4.0",
     "lodash": "^4.17.11",
     "log-symbols": "^3.0.0",
+    "micromatch": "^4.0.2",
     "open": "^6.3.0",
     "react-dev-utils": "^9.0.1",
     "swagger-parser": "^6.0.5",

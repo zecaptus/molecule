@@ -1,4 +1,5 @@
 const { merge, find } = require('lodash');
+const swaggerParser = require('swagger-parser');
 
 const defaultOAS = {
   openapi: '3.0.0',
@@ -7,7 +8,7 @@ const defaultOAS = {
     title: 'molecule app',
     description: 'default molecule app description',
   },
-  serveurs: [],
+  servers: [],
   tags: [],
   components: {},
   paths: {},
@@ -16,7 +17,6 @@ const defaultOAS = {
 class OAS {
   constructor(spec) {
     this.spec = defaultOAS;
-    // this.spec = spec;
 
     this.tags = new Proxy(this.spec.tags, {
       context: this,
@@ -30,6 +30,25 @@ class OAS {
         return true;
       },
     });
+  }
+
+  async validate() {
+    this.spec = await swaggerParser.validate(this.spec);
+  }
+
+  // init oas with package.json
+  async init(modulePath) {
+    const {
+      version,
+      name,
+      description,
+    } = require(`${modulePath}/package.json`);
+
+    this.spec.info = {
+      version,
+      title: name,
+      description,
+    };
   }
 
   addComponent(component) {

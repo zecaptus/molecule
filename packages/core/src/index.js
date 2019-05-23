@@ -1,21 +1,19 @@
 require('./utils/console');
-const swaggerParser = require('swagger-parser');
 const { dirname, join } = require('path');
 const Koa = require('koa');
 const Router = require('koa-router');
 const swaggerUi = require('@molecule/swagger-ui');
-const components = require('./components');
-const OAS = require('./OAS');
-const { createMiddleware } = require('./middlewares');
+const OAS = require('./lib/OAS');
 const tracker = require('./middlewares/requestTracker');
 const boot = require('./utils/boot');
+const { initComponents } = require('./utils/init');
 const chalk = require('chalk');
 const open = require('react-dev-utils/openBrowser');
 
 class MoleculeApp {
   constructor(modulePath, oas) {
     this.modulePath = modulePath;
-    this.oas = oas;
+    this.oas = new OAS();
     this.started = false;
     this.router = new Router();
     this.info = null;
@@ -26,11 +24,17 @@ class MoleculeApp {
 
   async init() {
     const { info, port } = await boot(this.port);
-    this.port = port;
     this.info = info;
+    this.port = port;
 
-    info.update('init components');
-    await this.initComponents();
+    info.update('init: OpenApi Object');
+    await this.oas.init(this.modulePath);
+
+    info.update('init: components');
+    await initComponents(this.modulePath, this.router, this.oas);
+
+    info.update('validate: OpenApi Object');
+    await this.oas.validate();
 
     this.start();
   }
@@ -50,34 +54,14 @@ class MoleculeApp {
     this.started = true;
     server.listen(this.port);
 
-    this.info.clear(`Your api is live on: http://localhost:${this.port}`);
+    this.info.clear(`Listen: http://localhost:${this.port}`);
     open(`http://localhost:${this.port}/docs`);
-  }
-
-  async initComponents() {
-    const comps = await components.getComponents(this.modulePath);
-
-    comps.forEach(comp => {
-      const operations = this.oas.addComponent(comp);
-
-      /**
-       * init routing
-       */
-      operations.forEach(
-        ({ method, path, operationId, 'x-middlewares': middlewares }) => {
-          const handlers = [...(middlewares || []), operationId].map(handler =>
-            createMiddleware(handler, comp.module),
-          );
-          this.router[method](path, ...handlers);
-        },
-      );
-    });
   }
 }
 
 function createApp(options) {
   const modulePath = dirname(module.parent.filename);
-  return new MoleculeApp(modulePath, new OAS());
+  return new MoleculeApp(modulePath);
 }
 
 module.exports = {
