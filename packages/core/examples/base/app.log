@@ -1,0 +1,53 @@
+
+              __             __   
+  __ _  ___  / /__ ______ __/ /__ 
+ /  ' \/ _ \/ / -_) __/ // / / -_)
+/_/_/_/\___/_/\__/\__/\_,_/_/\__/ 
+_________________________________v1.0.0
+
+ Booting
+ ->  Booting
+________________________________________
+
+ <-  Your api is live on: http://localhost:3000
+ GET /docs
+ ->  GET /docs
+ <-  GET /docs
+ ✔ GET /docs  21ms
+ GET /static/css/2.4146db7d.chunk.css
+ ->  GET /static/css/2.4146db7d.chunk.css
+ <-  GET /static/css/2.4146db7d.chunk.css
+ ✔ GET /static/css/2.4146db7d.chunk.css  5ms
+ GET /static/css/main.c13264ea.chunk.css
+ ->  GET /static/css/main.c13264ea.chunk.css
+ <-  GET /static/css/main.c13264ea.chunk.css
+ ✔ GET /static/css/main.c13264ea.chunk.css  0ms
+ GET /static/js/2.82f9052e.chunk.js
+ ->  GET /static/js/2.82f9052e.chunk.js
+ <-  GET /static/js/2.82f9052e.chunk.js
+ ✔ GET /static/js/2.82f9052e.chunk.js  1ms
+ GET /static/js/main.919f266a.chunk.js
+ ->  GET /static/js/main.919f266a.chunk.js
+ <-  GET /static/js/main.919f266a.chunk.js
+ ✔ GET /static/js/main.919f266a.chunk.js  1ms
+ GET /manifest.json
+ ->  GET /manifest.json
+ <-  GET /manifest.json
+ ✔ GET /manifest.json  0ms
+ GET /users
+ ->  GET /users
+   middleware1
+   ->  middleware1
+   middleware2
+   ->  middleware2
+   getUsers
+   ->  getUsers
+get user
+   <-  getUsers
+   ✔ getUsers  990ms
+   <-  middleware2
+   ✔ middleware2  943ms
+   <-  middleware1
+   ✔ middleware1  1993ms
+ <-  GET /users
+ ✔ GET /users  3933ms

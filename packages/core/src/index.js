@@ -1,18 +1,16 @@
+require('./utils/console');
 const swaggerParser = require('swagger-parser');
 const { dirname, join } = require('path');
 const Koa = require('koa');
 const Router = require('koa-router');
 const swaggerUi = require('@molecule/swagger-ui');
 const components = require('./components');
-const { choosePort } = require('./utils/port');
 const OAS = require('./OAS');
 const { createMiddleware } = require('./middlewares');
 const tracker = require('./middlewares/requestTracker');
-const gradient = require('gradient-string');
-const { version } = require('../package.json');
+const boot = require('./utils/boot');
 const chalk = require('chalk');
 const open = require('react-dev-utils/openBrowser');
-require('./utils/console');
 
 class MoleculeApp {
   constructor(modulePath, oas) {
@@ -23,44 +21,15 @@ class MoleculeApp {
     this.info = null;
     this.port = process.env.PORT || 3000;
 
-    this.sign();
     this.init();
   }
 
-  sign() {
-    console.clear();
-    console.log('');
-    console.log(
-      gradient('#61affe', 'white').multiline(
-        [
-          '              __             __   ',
-          '  __ _  ___  / /__ ______ __/ /__ ',
-          " /  ' \\/ _ \\/ / -_) __/ // / / -_)",
-          '/_/_/_/\\___/_/\\__/\\__/\\_,_/_/\\__/ ',
-          `_________________________________v${version}`,
-        ].join('\n'),
-      ),
-    );
-    console.log('');
-    this.info = console.draft();
-    console.log(
-      gradient('#61affe', 'white')('________________________________________'),
-    );
-    console.log('');
-  }
-
   async init() {
-    this.info('checking port:', this.port);
+    const { info, port } = await boot(this.port);
+    this.port = port;
+    this.info = info;
 
-    this.port = await choosePort(this.port);
-    this.sign();
-
-    if (!this.port) {
-      this.info(chalk.red("Can't start molecule"));
-      process.exit(1);
-    }
-
-    this.info('init components');
+    info.update('init components');
     await this.initComponents();
 
     this.start();
@@ -81,8 +50,8 @@ class MoleculeApp {
     this.started = true;
     server.listen(this.port);
 
-    this.info('Your api is live on :', `http://localhost:${this.port}`);
-    open('http://localhost:3000/docs');
+    this.info.clear(`Your api is live on: http://localhost:${this.port}`);
+    open(`http://localhost:${this.port}/docs`);
   }
 
   async initComponents() {
