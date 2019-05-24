@@ -14,7 +14,7 @@ const { createMiddleware } = require('../middlewares');
  * @param { options } options  optionnal options
  * @return { array } array of Component
  */
-async function getComponents(path, options) {
+async function getComponents(path, options = {}) {
   const opt = {
     componentsPath: './components',
     swaggerFilePattern: '*.swagger.yml',
@@ -37,11 +37,11 @@ async function getComponents(path, options) {
   );
 }
 
-async function initComponents(path, router, oas) {
-  const comps = await getComponents(path);
+async function initComponents() {
+  const comps = await getComponents(this.modulePath, this.options);
 
   comps.forEach(comp => {
-    const operations = oas.addComponent(comp);
+    const operations = this.oas.addComponent(comp);
 
     /**
      * init routing
@@ -51,7 +51,7 @@ async function initComponents(path, router, oas) {
         const handlers = [...(middlewares || []), operationId].map(handler =>
           createMiddleware(handler, comp.module),
         );
-        router[method](path, ...handlers);
+        this.router[method](path, ...handlers);
       },
     );
   });

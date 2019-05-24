@@ -11,7 +11,8 @@ const chalk = require('chalk');
 const open = require('react-dev-utils/openBrowser');
 
 class MoleculeApp {
-  constructor(modulePath, oas) {
+  constructor(modulePath, options) {
+    this.options = options;
     this.modulePath = modulePath;
     this.oas = new OAS();
     this.started = false;
@@ -31,7 +32,7 @@ class MoleculeApp {
     await this.oas.init(this.modulePath);
 
     info.update('init: components');
-    await initComponents(this.modulePath, this.router, this.oas);
+    await initComponents.apply(this);
 
     info.update('validate: OpenApi Object');
     await this.oas.validate();
@@ -59,9 +60,16 @@ class MoleculeApp {
   }
 }
 
-function createApp(options) {
+/**
+ * options
+ * ========
+ *
+ * componentsPath: './components',
+ * swaggerFilePattern: '*.swagger.yml',
+ */
+function createApp(options = {}) {
   const modulePath = dirname(module.parent.filename);
-  return new MoleculeApp(modulePath);
+  return new MoleculeApp(modulePath, options);
 }
 
 module.exports = {
