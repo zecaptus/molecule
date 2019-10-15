@@ -8,7 +8,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
-    "swagger-ui": "^3.22.1"
+    "swagger-ui": "^3.23.11"
   },
   "scripts": {
     "start": "react-scripts start",
