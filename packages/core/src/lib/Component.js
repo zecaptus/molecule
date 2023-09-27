@@ -19,7 +19,7 @@ class Component {
   }
 
   async require() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.module = require(this.path);
       resolve();
     });
@@ -28,20 +28,18 @@ class Component {
   async extractSpec() {
     const swaggerFiles = fs
       .readdirSync(this.path)
-      .filter(file => this.isSwaggerFile(file));
+      .filter((file) => this.isSwaggerFile(file));
 
     const docs = await Promise.all(
-      swaggerFiles.map(file => this.requireYml(file)),
+      swaggerFiles.map((file) => this.requireYml(file)),
     );
 
     merge(this.spec, ...docs);
   }
 
   async requireYml(filename) {
-    return new Promise(resolve => {
-      const doc = yaml.safeLoad(
-        fs.readFileSync(join(this.path, filename), 'utf8'),
-      );
+    return new Promise((resolve) => {
+      const doc = yaml.load(fs.readFileSync(join(this.path, filename), 'utf8'));
       resolve(doc);
     });
   }
@@ -50,13 +48,13 @@ class Component {
   valid() {
     const { paths } = this.spec;
 
-    return Object.keys(paths).some(path =>
-      Object.keys(paths[path]).some(method => {
+    return Object.keys(paths).some((path) =>
+      Object.keys(paths[path]).some((method) => {
         const controllers = paths[path][method]['x-controller'];
         if (!controllers) return false;
         return []
           .concat(controllers)
-          .some(controller =>
+          .some((controller) =>
             Object.hasOwnProperty.call(this.module, controller),
           );
       }),

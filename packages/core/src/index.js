@@ -7,7 +7,6 @@ const OAS = require('./lib/OAS');
 const tracker = require('./middlewares/requestTracker');
 const boot = require('./utils/boot');
 const { initComponents } = require('./utils/init');
-const chalk = require('chalk');
 const open = require('react-dev-utils/openBrowser');
 
 class MoleculeApp {
