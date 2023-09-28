@@ -1,11 +1,11 @@
-const fs = require('fs');
-const { execSync } = require('child_process');
-const chalk = require('chalk');
-const detect = require('detect-port');
-const inquirer = require('inquirer');
+import { ExecSyncOptionsWithStringEncoding, execSync } from 'child_process';
+import chalk from 'chalk';
+import detect from 'detect-port';
+import inquirer from 'inquirer';
+
 const isInteractive = process.stdout.isTTY;
 
-var execOptions = {
+const execOptions: ExecSyncOptionsWithStringEncoding = {
   encoding: 'utf8',
   stdio: [
     'pipe', // stdin (default)
@@ -13,13 +13,13 @@ var execOptions = {
     'ignore', //stderr
   ],
 };
-function getProcessIdOnPort(port) {
+function getProcessIdOnPort(port: number) {
   return execSync('lsof -i:' + port + ' -P -t -sTCP:LISTEN', execOptions)
     .split('\n')[0]
     .trim();
 }
 
-function getDirectoryOfProcessById(processId) {
+function getDirectoryOfProcessById(processId: string) {
   return execSync(
     'lsof -p ' +
       processId +
@@ -28,8 +28,8 @@ function getDirectoryOfProcessById(processId) {
   ).trim();
 }
 
-function getProcessCommand(processId, processDirectory) {
-  var command = execSync(
+function getProcessCommand(processId: string, processDirectory?: string) {
+  const command = execSync(
     'ps -o command -p ' + processId + ' | sed -n 2p',
     execOptions,
   );
@@ -37,11 +37,11 @@ function getProcessCommand(processId, processDirectory) {
   return command.replace(/\n$/, '');
 }
 
-function getProcessForPort(port) {
+function getProcessForPort(port: number) {
   try {
-    var processId = getProcessIdOnPort(port);
-    var directory = getDirectoryOfProcessById(processId);
-    var command = getProcessCommand(processId, directory);
+    const processId = getProcessIdOnPort(port);
+    const directory = getDirectoryOfProcessById(processId);
+    const command = getProcessCommand(processId, directory);
     return (
       chalk.cyan(command) +
       chalk.grey(' (pid ' + processId + ')\n') +
@@ -53,7 +53,7 @@ function getProcessForPort(port) {
   }
 }
 
-function choosePort(defaultPort) {
+function choosePort(defaultPort: number): Promise<number | null> {
   return detect(defaultPort).then(
     (port) =>
       new Promise((resolve) => {
@@ -61,23 +61,26 @@ function choosePort(defaultPort) {
           return resolve(port);
         }
         const message =
-          process.platform !== 'win32' && defaultPort < 1024 && !isRoot()
+          process.platform !== 'win32' && defaultPort < 1024
             ? `Admin permissions are required to run a server on a port below 1024.`
             : `Something is already running on port ${defaultPort}.`;
         if (isInteractive) {
           const existingProcess = getProcessForPort(defaultPort);
-          const question = {
-            type: 'confirm',
-            name: 'shouldChangePort',
-            message:
-              chalk.yellow(
-                message +
-                  `${
-                    existingProcess ? ` Probably:\n  ${existingProcess}` : ''
-                  }`,
-              ) + '\n\nWould you like to run the app on another port instead?',
-            default: true,
-          };
+          const question = [
+            {
+              type: 'confirm',
+              name: 'shouldChangePort',
+              message:
+                chalk.yellow(
+                  message +
+                    `${
+                      existingProcess ? ` Probably:\n  ${existingProcess}` : ''
+                    }`,
+                ) +
+                '\n\nWould you like to run the app on another port instead?',
+              default: true,
+            },
+          ];
           inquirer.prompt(question).then((answer) => {
             if (answer.shouldChangePort) {
               resolve(port);
@@ -92,7 +95,7 @@ function choosePort(defaultPort) {
       }),
     (err) => {
       throw new Error(
-        chalk.red(`Could not find an open port at ${chalk.bold(host)}.`) +
+        chalk.red(`Could not find an open port at ${chalk.bold('host')}.`) +
           '\n' +
           ('Network error message: ' + err.message || err) +
           '\n',
@@ -101,7 +104,4 @@ function choosePort(defaultPort) {
   );
 }
 
-module.exports = {
-  getProcessForPort,
-  choosePort,
-};
+export { getProcessForPort, choosePort };

@@ -1,11 +1,31 @@
-const fs = require('fs');
-const { join } = require('path');
-const yaml = require('js-yaml');
-const mm = require('micromatch');
-const { merge } = require('lodash');
+import { AppOptions } from '..';
+
+import fs from 'fs';
+import { join } from 'path';
+import yaml from 'js-yaml';
+import mm from 'micromatch';
+import { merge } from 'lodash';
+import { OpenAPIV3 } from 'openapi-types';
+
+type ExtendedOperationObject = {
+  ['x-controller']: string[];
+};
+
+type MoleculeComponentSpec = {
+  description?: string;
+  paths?: OpenAPIV3.PathsObject<ExtendedOperationObject>;
+  components?: OpenAPIV3.ComponentsObject;
+};
 
 class Component {
-  constructor(name, path, options) {
+  name: string;
+  path: string;
+  module: any;
+  spec: MoleculeComponentSpec;
+
+  isSwaggerFile: (filePattern: string) => boolean;
+
+  constructor(name: string, path: string, options: AppOptions) {
     this.name = name;
     this.path = join(path, options.componentsPath, name);
     this.module = null;
@@ -19,7 +39,7 @@ class Component {
   }
 
   async require() {
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       this.module = require(this.path);
       resolve();
     });
@@ -37,7 +57,7 @@ class Component {
     merge(this.spec, ...docs);
   }
 
-  async requireYml(filename) {
+  async requireYml(filename: string) {
     return new Promise((resolve) => {
       const doc = yaml.load(fs.readFileSync(join(this.path, filename), 'utf8'));
       resolve(doc);
@@ -45,14 +65,18 @@ class Component {
   }
 
   // check if controllers exists
-  valid() {
+  valid(): boolean {
     const { paths } = this.spec;
 
+    if (!paths) return false;
+
     return Object.keys(paths).some((path) =>
-      Object.keys(paths[path]).some((method) => {
-        const controllers = paths[path][method]['x-controller'];
+      Object.keys(paths[path] ?? {}).some((method) => {
+        const controllers = (
+          paths[path] as OpenAPIV3.PathItemObject<ExtendedOperationObject>
+        )[method as OpenAPIV3.HttpMethods]?.['x-controller'];
         if (!controllers) return false;
-        return []
+        return ([] as string[])
           .concat(controllers)
           .some((controller) =>
             Object.hasOwnProperty.call(this.module, controller),
@@ -62,4 +86,4 @@ class Component {
   }
 }
 
-module.exports = Component;
+export default Component;

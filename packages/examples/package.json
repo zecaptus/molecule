@@ -1,0 +1,15 @@
+{
+  "name": "example-base",
+  "version": "1.0.0",
+  "description": "basic usecase for molecule",
+  "main": "index.js",
+  "scripts": {
+    "start": "molecule start",
+    "dev": "nodemon --watch ../core/dist/src/ --watch libs index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@molecule/core": "0.1.0"
+  }
+}

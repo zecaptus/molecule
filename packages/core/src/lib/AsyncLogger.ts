@@ -21,20 +21,39 @@ const spinner = {
   frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
 };
 
+type Logger = typeof console.log;
+
+export type AsyncLoggerOptions = {
+  prefix?: string;
+  startImmediatly?: boolean;
+  spinner?: typeof spinner;
+  logger?: Logger;
+};
+
 class AsyncLogger {
+  text: string;
+
+  prefix: string;
+  startImmediatly: boolean;
+  spinner: typeof spinner;
+  customLogger: Logger;
+  logger: Logger | undefined;
+
+  timer: NodeJS.Timeout | undefined;
+
   /**
    * @constructor
    * @param {String} text text to log
    * @param {LoggerOptions} options options
    */
-  constructor(text, options = {}) {
+  constructor(text: string, options: AsyncLoggerOptions = {}) {
     this.text = text;
 
     // > options
-    this.prefix = options.prefix || '';
-    this.startImmediatly = options.startImmediatly || true;
-    this.spinner = options.spinner || spinner;
-    this.customLogger = options.loggger || console.log;
+    this.prefix = options.prefix ?? '';
+    this.startImmediatly = options.startImmediatly ?? true;
+    this.spinner = options.spinner ?? spinner;
+    this.customLogger = options.logger ?? console.log;
     // < options
 
     this.log(this.text);
@@ -42,7 +61,7 @@ class AsyncLogger {
     if (this.startImmediatly) this.start();
   }
 
-  log(...args) {
+  log(...args: any[]) {
     if (isInteractive) {
       if (!this.logger) this.logger = console.draft(this.prefix, ...args);
       else this.logger(this.prefix, ...args);
@@ -51,7 +70,7 @@ class AsyncLogger {
     }
   }
 
-  update(text) {
+  update(text: string) {
     this.text = text;
     this.log(text);
   }
@@ -77,4 +96,4 @@ class AsyncLogger {
   }
 }
 
-module.exports = AsyncLogger;
+export default AsyncLogger;

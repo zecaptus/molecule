@@ -1,7 +1,25 @@
-const TimeTracker = require('./TimeTracker');
+import { Context } from 'koa';
+import TimeTracker from './TimeTracker';
+import { AsyncLoggerOptions } from './AsyncLogger';
+
+enum Status {
+  CREATE = 'create',
+  ERROR = 'error',
+  DONE = 'done',
+  IDLE = 'idle',
+}
+
+type EventHandlerParameters = {
+  handler: string;
+  status: Status;
+};
 
 class RequestTracker extends TimeTracker {
-  constructor(ctx, options) {
+  ctx: Context;
+  middlewares: {
+    [handler: string]: TimeTracker;
+  };
+  constructor(ctx: Context, options?: AsyncLoggerOptions) {
     super(`${ctx.method} ${ctx.url}`, options);
 
     this.ctx = ctx;
@@ -10,23 +28,23 @@ class RequestTracker extends TimeTracker {
     this.middlewares = {};
   }
 
-  onStart = ({ handler, status }) => {
-    if (!this.middlewares[handler] && status === 'create') {
+  onStart = ({ handler, status }: EventHandlerParameters) => {
+    if (!this.middlewares[handler] && status === Status.CREATE) {
       this.middlewares[handler] = new TimeTracker(handler, { prefix: '  ' });
     } else {
       this.middlewares[handler].resume();
     }
   };
 
-  onEnd = ({ handler, status }) => {
+  onEnd = ({ handler, status }: EventHandlerParameters) => {
     switch (status) {
-      case 'error':
+      case Status.ERROR:
         this.middlewares[handler].failed();
         break;
-      case 'done':
+      case Status.DONE:
         this.middlewares[handler].success();
         break;
-      case 'idle':
+      case Status.IDLE:
         this.middlewares[handler].idle();
         break;
     }
@@ -45,4 +63,4 @@ class RequestTracker extends TimeTracker {
   }
 }
 
-module.exports = RequestTracker;
+export default RequestTracker;

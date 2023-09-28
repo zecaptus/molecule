@@ -1,12 +1,12 @@
-const { version } = require('../../package.json');
-const AsyncLogger = require('../lib/AsyncLogger');
-const { red } = require('chalk');
-const gradient = require('gradient-string');
-const { choosePort } = require('./port');
+import { version } from '../../package.json';
+import AsyncLogger from '../lib/AsyncLogger';
+import { red, italic } from 'chalk';
+import gradient from 'gradient-string';
+import { choosePort } from './port';
 
 const isInteractive = process.stdout.isTTY;
 
-function moleculeGradient(text) {
+function moleculeGradient(text: string) {
   return gradient('#61affe', 'white')(text);
 }
 
@@ -26,13 +26,14 @@ function sign() {
   );
   console.log('');
   const info = new AsyncLogger(moleculeGradient('Booting'));
+  console.log(italic(moleculeGradient('\nℹ type `rs` to reload at anytime')));
   console.log(moleculeGradient('________________________________________'));
   console.log('');
 
   return info;
 }
 
-async function boot(port) {
+async function boot(port: number) {
   let info = sign();
 
   info.update(`checking port: ${port}`);
@@ -51,4 +52,4 @@ async function boot(port) {
   return { info, port: _port };
 }
 
-module.exports = boot;
+export default boot;

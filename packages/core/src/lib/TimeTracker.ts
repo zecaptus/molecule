@@ -1,11 +1,17 @@
-const AsyncLogger = require('./AsyncLogger');
-const { green, gray, yellow, red, italic } = require('chalk');
+import AsyncLogger, { AsyncLoggerOptions } from './AsyncLogger';
+import { green, gray, yellow, red, italic } from 'chalk';
 
 class TimeTracker extends AsyncLogger {
-  constructor(text, options) {
+  createdAt: number;
+  idleAt: number | undefined;
+  resumeAt: number;
+  originalText: string;
+
+  constructor(text: string, options?: AsyncLoggerOptions) {
     super(text, options);
 
     this.createdAt = Date.now();
+    this.resumeAt = 0;
     this.originalText = text;
   }
 
@@ -47,4 +53,4 @@ class TimeTracker extends AsyncLogger {
   }
 }
 
-module.exports = TimeTracker;
+export default TimeTracker;

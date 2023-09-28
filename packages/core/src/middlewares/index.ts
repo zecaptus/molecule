@@ -1,9 +1,15 @@
-function createMiddleware(handler, moduleHandlers) {
+import { Middleware, Context, Next } from 'koa';
+import Component from '../lib/Component';
+
+function createMiddleware(
+  handler: string,
+  moduleHandlers: Component['module'],
+): Middleware {
   let nextStarted = false;
   let nextEnded = false;
 
-  let _next;
-  let _ctx;
+  let _next: Next;
+  let _ctx: Context;
 
   const namedFunctions = {
     async [`${handler}_next`]() {
@@ -13,7 +19,7 @@ function createMiddleware(handler, moduleHandlers) {
       nextEnded = true;
       _ctx.app.emit('mw:start', { handler, status: 'resume' });
     },
-    async [handler](ctx, next) {
+    async [handler](ctx: Context, next: Next) {
       _ctx = ctx;
       _next = next;
 
@@ -39,6 +45,4 @@ function createMiddleware(handler, moduleHandlers) {
   return namedFunctions[handler];
 }
 
-module.exports = {
-  createMiddleware,
-};
+export { createMiddleware };
